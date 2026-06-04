@@ -1,0 +1,23 @@
+{% extends "research_repo/base.html" %}
+{% block title %}{{ profile_user.username }}{% endblock %}
+{% block content %}
+<div class="rg-profile-header">
+  <div class="rg-avatar">{{ profile_user.username|slice:":1"|upper }}</div>
+  <div>
+    <h1 style="margin:0;">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+    <p style="color:var(--rg-muted);margin:0.25rem 0 0;">{{ profile_user.description|default:"Faculty researcher on ScholarVault." }}</p>
+  </div>
+</div>
+
+<h2 class="rg-section-title">Public publications</h2>
+<div class="rg-card-grid">
+  {% for pub in publications %}
+  <article class="rg-pub-card">
+    <h3><a href="{% url 'publication_detail' pub.pk %}">{{ pub.title }}</a></h3>
+    <p class="rg-pub-abstract">{{ pub.abstract|truncatewords:30 }}</p>
+  </article>
+  {% empty %}
+  <p class="rg-empty">No public publications on this profile.</p>
+  {% endfor %}
+</div>
+{% endblock %}

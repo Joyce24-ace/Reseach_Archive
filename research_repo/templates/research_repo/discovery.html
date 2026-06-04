@@ -1,0 +1,44 @@
+{% extends "research_repo/base.html" %}
+{% block title %}Discover{% endblock %}
+{% block content %}
+<h1 style="margin-top:0;">Discover research</h1>
+<p style="color:var(--rg-muted);margin-bottom:1.25rem;">Browse open-access abstracts from faculty portfolios.</p>
+
+<form class="rg-search-bar" method="get" action="{% url 'discovery' %}">
+  <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search titles and abstracts…" class="form-control">
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<div class="rg-card-grid">
+  {% for pub in publications %}
+  <article class="rg-pub-card">
+    <span class="rg-badge rg-badge-public">Open access</span>
+    <h3>
+      <a href="{% if user.is_authenticated %}{% url 'publication_detail' pub.pk %}{% else %}{% url 'login' %}?next={% url 'publication_detail' pub.pk %}{% endif %}">
+        {{ pub.title }}
+      </a>
+    </h3>
+    <p class="rg-pub-meta">
+      <a href="{% url 'profile' pub.uploader.username %}">{{ pub.uploader.get_full_name|default:pub.uploader.username }}</a>
+    </p>
+    <p class="rg-pub-abstract">{{ pub.abstract|truncatewords:45 }}</p>
+  </article>
+  {% empty %}
+  <div class="rg-empty" style="grid-column:1/-1;">
+    <p>No publications match your search.</p>
+  </div>
+  {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav style="margin-top:1.5rem;display:flex;gap:0.5rem;justify-content:center;">
+  {% if page_obj.has_previous %}
+    <a href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}" class="btn btn-secondary">&larr; Previous</a>
+  {% endif %}
+  <span style="padding:0.5rem 1rem;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}" class="btn btn-secondary">Next &rarr;</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "research_repo/base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="rg-layout">
+  <aside class="rg-sidebar">
+    <h4>Account</h4>
+    <ul>
+      <li><a href="{% url 'settings' %}" class="active">Settings</a></li>
+      <li><a href="{% url 'profile' user.username %}">Public profile</a></li>
+    </ul>
+  </aside>
+  <div class="rg-form-panel">
+    <h1>Account settings</h1>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr><td style="padding:0.5rem 0;color:var(--rg-muted);">Username</td><td>{{ user.username }}</td></tr>
+      <tr><td style="padding:0.5rem 0;color:var(--rg-muted);">Email</td><td>{{ user.email }}</td></tr>
+      <tr><td style="padding:0.5rem 0;color:var(--rg-muted);">Faculty status</td><td>{% if user.is_faculty %}Yes{% else %}No{% endif %}</td></tr>
+      <tr><td style="padding:0.5rem 0;color:var(--rg-muted);">Identity verified</td><td>{% if user.is_identity_verified %}Yes{% else %}Pending admin review{% endif %}</td></tr>
+      <tr><td style="padding:0.5rem 0;color:var(--rg-muted);">Can upload</td><td>{% if user.can_upload %}Yes{% else %}No{% endif %}</td></tr>
+    </table>
+    <p style="margin-top:1.5rem;color:var(--rg-muted);font-size:0.9rem;">
+      API consumers: obtain JWT tokens at <code>/api/get_token</code>. Premium and Reviewer groups unlock full PDF URLs in API responses.
+    </p>
+  </div>
+</div>
+{% endblock %}

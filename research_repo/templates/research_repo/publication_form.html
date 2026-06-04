@@ -1,0 +1,52 @@
+{% extends "research_repo/base.html" %}
+{% block title %}{% if object %}Edit{% else %}Upload{% endif %} publication{% endblock %}
+{% block content %}
+<div class="rg-form-panel" style="max-width:720px;margin:0 auto;">
+  <h1>{% if object %}Edit publication{% else %}Upload research paper{% endif %}</h1>
+  <p style="color:var(--rg-muted);">Add co-authors inline. PDFs are stored securely on Cloudinary.</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<small style="color:var(--rg-muted);">{{ field.help_text }}</small>{% endif %}
+      {% if field.errors %}<div class="rg-alert rg-alert-error">{{ field.errors }}</div>{% endif %}
+    </div>
+    {% endfor %}
+
+    <h3 style="margin-top:1.5rem;">Co-authors</h3>
+    {{ authorship_formset.management_form }}
+    <div id="coauthor-formset">
+      {% for form in authorship_formset %}
+      <div class="formset-row">
+        <h4>Co-author {{ forloop.counter }}</h4>
+        {% for field in form %}
+          {% if field.name != 'DELETE' and field.name != 'id' %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% else %}
+          {{ field }}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <template id="empty-coauthor-form">
+      {% with authorship_formset.empty_form as f %}
+      <h4>New co-author</h4>
+      <div class="form-group"><label>{{ f.user.label }}</label>{{ f.user }}</div>
+      <div class="form-group"><label>{{ f.contribution_role.label }}</label>{{ f.contribution_role }}</div>
+      {{ f.id }}
+      {% endwith %}
+    </template>
+    <button type="button" id="add-coauthor" class="btn btn-secondary" style="margin-bottom:1rem;">+ Add co-author</button>
+
+    <button type="submit" class="btn btn-primary">Save publication</button>
+    <a href="{% url 'publication_list' %}" class="btn btn-secondary" style="margin-left:0.5rem;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

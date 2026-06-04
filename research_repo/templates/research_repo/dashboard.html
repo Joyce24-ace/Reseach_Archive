@@ -1,0 +1,50 @@
+{% extends "research_repo/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="rg-layout">
+  <aside class="rg-sidebar">
+    <h4>Portfolio</h4>
+    <ul>
+      <li><a href="{% url 'dashboard' %}" class="active">Overview</a></li>
+      <li><a href="{% url 'publication_list' %}">All publications</a></li>
+      {% if user.can_upload %}
+      <li><a href="{% url 'publication_create' %}">Upload paper</a></li>
+      {% endif %}
+      <li><a href="{% url 'settings' %}">Settings</a></li>
+    </ul>
+  </aside>
+  <div>
+    <div class="rg-profile-header">
+      <div class="rg-avatar">{{ user.username|slice:":1"|upper }}</div>
+      <div>
+        <h1 style="margin:0;">{{ user.get_full_name|default:user.username }}</h1>
+        <p style="margin:0.25rem 0 0;color:var(--rg-muted);">{{ user.email }}</p>
+        {% if user.is_faculty and user.is_identity_verified %}
+          <span class="rg-badge rg-badge-public">Verified faculty</span>
+        {% elif user.is_faculty %}
+          <span class="rg-badge rg-badge-private">Faculty — pending verification</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="rg-stats" style="margin-bottom:1.5rem;">
+      <div class="rg-stat-card"><strong>{{ stats.uploaded }}</strong><span>Uploaded</span></div>
+      <div class="rg-stat-card"><strong>{{ stats.coauthored }}</strong><span>Co-authored</span></div>
+      <div class="rg-stat-card"><strong>{{ stats.grants }}</strong><span>Reviewer grants</span></div>
+    </div>
+
+    <h2 class="rg-section-title">Recent uploads <a href="{% url 'publication_create' %}">+ New</a></h2>
+    <div class="rg-card-grid">
+      {% for pub in my_publications %}
+      <article class="rg-pub-card">
+        {% if pub.is_public %}<span class="rg-badge rg-badge-public">Public</span>{% else %}<span class="rg-badge rg-badge-private">Restricted</span>{% endif %}
+        <h3><a href="{% url 'publication_detail' pub.pk %}">{{ pub.title }}</a></h3>
+        <p class="rg-pub-abstract">{{ pub.abstract|truncatewords:25 }}</p>
+      </article>
+      {% empty %}
+      <p class="rg-empty">No publications yet. <a href="{% url 'publication_create' %}">Upload your first paper</a>.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

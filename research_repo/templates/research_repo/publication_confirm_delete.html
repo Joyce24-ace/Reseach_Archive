@@ -1,0 +1,13 @@
+{% extends "research_repo/base.html" %}
+{% block title %}Delete publication{% endblock %}
+{% block content %}
+<div class="rg-form-panel" style="max-width:480px;margin:2rem auto;">
+  <h1>Delete publication?</h1>
+  <p>Permanently remove <strong>{{ object.title }}</strong> and revoke all reviewer grants.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a href="{% url 'publication_detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

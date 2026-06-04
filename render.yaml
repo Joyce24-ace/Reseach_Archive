@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: scholarvault
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: scholarvault-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: SKIP_EMAIL_VERIFICATION
+        value: "True"
+      - key: GRADING_SUPERUSER_USERNAME
+        value: grader
+      - key: GRADING_SUPERUSER_EMAIL
+        value: grader@evsu.edu.ph
+      - key: GRADING_SUPERUSER_PASSWORD
+        sync: false
+
+databases:
+  - name: scholarvault-db
+    plan: free

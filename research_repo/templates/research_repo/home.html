@@ -1,0 +1,42 @@
+{% extends "research_repo/base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="rg-hero">
+  <h1>Share discoveries. Protect sensitive data.</h1>
+  <p>
+    ScholarVault is a secure academic portfolio for university faculty&mdash;publish abstracts publicly,
+    grant time-limited reviewer access to full PDFs and datasets, and manage co-authors in one place.
+  </p>
+  <div class="rg-hero-actions">
+    <a href="{% url 'discovery' %}" class="btn btn-primary">Explore research</a>
+    {% if not user.is_authenticated %}
+      <a href="{% url 'signup' %}" class="btn btn-outline">Create account</a>
+    {% else %}
+      <a href="{% url 'dashboard' %}" class="btn btn-outline">Go to dashboard</a>
+    {% endif %}
+  </div>
+</section>
+
+<div class="rg-stats">
+  <div class="rg-stat-card"><strong>{{ public_count }}</strong><span>Public publications</span></div>
+  <div class="rg-stat-card"><strong>JWT</strong><span>API for citation engines</span></div>
+  <div class="rg-stat-card"><strong>RBAC</strong><span>Object-level permissions</span></div>
+  <div class="rg-stat-card"><strong>Cloudinary</strong><span>Secure large-file storage</span></div>
+</div>
+
+<section>
+  <h2 class="rg-section-title">Featured open access <a href="{% url 'discovery' %}">View all &rarr;</a></h2>
+  <div class="rg-card-grid">
+    {% for pub in featured %}
+    <article class="rg-pub-card">
+      <span class="rg-badge rg-badge-public">Open access</span>
+      <h3><a href="{% if user.is_authenticated %}{% url 'publication_detail' pub.pk %}{% else %}{% url 'login' %}?next={% url 'publication_detail' pub.pk %}{% endif %}">{{ pub.title }}</a></h3>
+      <p class="rg-pub-meta">By {{ pub.uploader.get_full_name|default:pub.uploader.username }}</p>
+      <p class="rg-pub-abstract">{{ pub.abstract|truncatewords:40 }}</p>
+    </article>
+    {% empty %}
+    <p class="rg-empty">No public publications yet. Faculty can upload the first paper.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

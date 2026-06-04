@@ -1,0 +1,47 @@
+{% extends "research_repo/base.html" %}
+{% block title %}My Research{% endblock %}
+{% block content %}
+<div class="rg-layout">
+  <aside class="rg-sidebar">
+    <h4>Research</h4>
+    <ul>
+      <li><a href="{% url 'publication_list' %}" class="active">All accessible</a></li>
+      {% if user.can_upload %}
+      <li><a href="{% url 'publication_create' %}">Upload new</a></li>
+      {% endif %}
+    </ul>
+  </aside>
+  <div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h1 style="margin:0;">My research feed</h1>
+      {% if user.can_upload %}
+      <a href="{% url 'publication_create' %}" class="btn btn-primary">+ Upload publication</a>
+      {% endif %}
+    </div>
+
+    <form class="rg-search-bar" method="get">
+      <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Filter by title or abstract…" class="form-control">
+      <button type="submit" class="btn btn-secondary">Filter</button>
+    </form>
+
+    <div class="rg-card-grid">
+      {% for pub in publications %}
+      <article class="rg-pub-card">
+        {% if pub.is_public %}
+          <span class="rg-badge rg-badge-public">Public</span>
+        {% else %}
+          <span class="rg-badge rg-badge-private">Restricted</span>
+        {% endif %}
+        {% if not pub.full_pdf %}<span class="rg-badge rg-badge-locked">No PDF</span>{% endif %}
+        <h3><a href="{% url 'publication_detail' pub.pk %}">{{ pub.title }}</a></h3>
+        <p class="rg-pub-meta">{{ pub.uploader.username }} &bull; {% if pub.uploader == user %}Owner{% else %}Shared with you{% endif %}</p>
+        <p class="rg-pub-abstract">{{ pub.abstract|truncatewords:35 }}</p>
+        <a href="{% url 'publication_detail' pub.pk %}">View details &rarr;</a>
+      </article>
+      {% empty %}
+      <p class="rg-empty">No publications in your feed yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

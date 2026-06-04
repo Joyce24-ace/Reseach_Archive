@@ -1,0 +1,26 @@
+{% extends "research_repo/base.html" %}
+{% load honeypot %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="rg-auth-wrap">
+  <div class="rg-auth-card">
+    <h1>Join ScholarVault</h1>
+    <p class="subtitle">Use your institutional email to register</p>
+    <form method="post" action="{% url 'signup' %}">
+      {% csrf_token %}
+      {% render_honeypot_field %}
+      {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="rg-alert rg-alert-error">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary" style="width:100%;">Create account</button>
+    </form>
+    <p style="margin-top:1.25rem;text-align:center;font-size:0.9rem;">
+      Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

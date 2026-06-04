@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ScholarVault{% endblock %} | Secure Research Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'research_repo/css/main.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header class="rg-header">
+    <div class="rg-header-inner">
+      <a href="{% url 'home' %}" class="rg-logo">
+        <span class="rg-logo-mark">SV</span>
+        ScholarVault
+      </a>
+      <nav class="rg-nav">
+        <a href="{% url 'discovery' %}" {% if request.resolver_match.url_name == 'discovery' %}class="active"{% endif %}>Discover</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>Dashboard</a>
+          <a href="{% url 'publication_list' %}" {% if 'publication' in request.resolver_match.url_name %}class="active"{% endif %}>My Research</a>
+          {% if user.can_upload %}
+            <a href="{% url 'publication_create' %}">Upload</a>
+          {% endif %}
+        {% endif %}
+      </nav>
+<div class="rg-header-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' user.username %}" class="btn btn-outline">{{ user.get_full_name|default:user.username }}</a>
+          
+          <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline" style="font: inherit; cursor: pointer;">
+              Sign out
+            </button>
+          </form>
+          
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline">Sign in</a>
+          <a href="{% url 'signup' %}" class="btn btn-primary">Join for free</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+  <div class="rg-main rg-messages">
+    {% for message in messages %}
+      <div class="rg-alert rg-alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="rg-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="rg-footer">
+  ScholarVault &mdash; Secure Academic Research &amp; Portfolio Repository &bull;
+  EVSU Faculty &amp; Peer Review Platform &bull; {% now "Y" %}
+  </footer>
+  <script src="{% static 'research_repo/js/app.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

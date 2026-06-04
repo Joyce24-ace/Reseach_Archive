@@ -1,0 +1,46 @@
+{% extends "research_repo/base.html" %}
+{% block title %}{{ publication.title }}{% endblock %}
+{% block content %}
+<article>
+  <div class="rg-detail-header">
+    {% if publication.is_public %}
+      <span class="rg-badge rg-badge-public">Public abstract</span>
+    {% else %}
+      <span class="rg-badge rg-badge-private">Restricted</span>
+    {% endif %}
+    <h1>{{ publication.title }}</h1>
+    <p class="rg-pub-meta">
+      Uploaded by <a href="{% url 'profile' publication.uploader.username %}">{{ publication.uploader.get_full_name|default:publication.uploader.username }}</a>
+    </p>
+    <div class="rg-author-list">
+      <span class="rg-author-chip">{{ publication.uploader.username }} (lead)</span>
+      {% for auth in publication.authors.all %}
+      <span class="rg-author-chip">{{ auth.user.username }} &mdash; {{ auth.contribution_role }}</span>
+      {% endfor %}
+    </div>
+    <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      {% if can_download and publication.full_pdf %}
+        <a href="{% url 'publication_download' publication.pk %}" class="btn btn-primary">Download full PDF</a>
+      {% elif publication.full_pdf %}
+        <span class="btn btn-secondary" style="opacity:0.7;cursor:not-allowed;">PDF locked — request reviewer access</span>
+      {% endif %}
+      {% if is_owner or user.is_staff %}
+        <a href="{% url 'grant_access' publication_id=publication.pk %}" class="btn btn-secondary">Grant reviewer access</a>
+        <a href="{% url 'publication_update' publication.pk %}" class="btn btn-secondary">Edit</a>
+        <a href="{% url 'publication_delete' publication.pk %}" class="btn btn-danger">Delete</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="rg-form-panel">
+    <h2>Abstract</h2>
+    <p style="white-space:pre-wrap;">{{ publication.abstract }}</p>
+  </div>
+
+  {% if not can_download %}
+  <div class="rg-alert rg-alert-info" style="margin-top:1rem;">
+    Full PDF and dataset files are hidden from the public. Premium API tokens, faculty accounts, or an active reviewer grant unlock download links.
+  </div>
+  {% endif %}
+</article>
+{% endblock %}
